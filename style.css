@@ -1,0 +1,124 @@
+/* Thanh cuộn mảnh tối giản */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.25);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.45);
+}
+
+/* Hiệu ứng 3 dấu chấm nhấp nháy khi bot đang trả lời */
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #94a3b8;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.1);
+    opacity: 1;
+    background-color: #38bdf8;
+  }
+}
+
+/* Định dạng Markdown */
+.markdown-body {
+  color: #e2e8f0;
+  line-height: 1.6;
+  font-size: 0.925rem;
+}
+.markdown-body p { margin-bottom: 0.75em; }
+.markdown-body p:last-child { margin-bottom: 0; }
+.markdown-body strong { color: #ffffff; font-weight: 600; }
+.markdown-body em { color: #cbd5e1; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  color: #f8fafc;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.4em;
+}
+.markdown-body h1 { font-size: 1.25rem; }
+.markdown-body h2 { font-size: 1.15rem; }
+.markdown-body h3 { font-size: 1.05rem; }
+.markdown-body ul { list-style-type: disc; padding-left: 1.25em; margin-bottom: 0.75em; }
+.markdown-body ol { list-style-type: decimal; padding-left: 1.25em; margin-bottom: 0.75em; }
+.markdown-body li { margin-bottom: 0.25em; }
+.markdown-body li::marker { color: #60a5fa; }
+.markdown-body blockquote {
+  border-left: 3px solid #3b82f6;
+  padding-left: 0.75em;
+  margin: 0.75em 0;
+  color: #94a3b8;
+  font-style: italic;
+  background: rgba(59, 130, 246, 0.05);
+}
+.markdown-body a { color: #60a5fa; text-decoration: underline; }
+.markdown-body table { width: 100%; border-collapse: collapse; margin: 0.75em 0; font-size: 0.85rem; }
+.markdown-body th, .markdown-body td { border: 1px solid #334155; padding: 0.4rem 0.6rem; text-align: left; }
+.markdown-body th { background-color: #1e293b; color: #f1f5f9; }
+
+/* Code Inline */
+.markdown-body :not(pre) > code {
+  background-color: #1a1e28;
+  color: #f472b6;
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-family: monospace;
+}
+
+/* Khối Code Block và Nút Copy */
+.code-block-wrapper {
+  margin: 0.75em 0;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border: 1px solid #334155;
+  background-color: #0f141c;
+}
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  background-color: #18202d;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: monospace;
+  border-bottom: 1px solid #283344;
+}
+.code-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  cursor: pointer;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+.code-copy-btn:hover { background-color: #2b384d; color: #fff; }
+.code-block-wrapper pre {
+  margin: 0;
+  padding: 0.75rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  background-color: #0d1117 !important;
+}

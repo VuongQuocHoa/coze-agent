@@ -1,0 +1,14 @@
+# Dependency & Build
+node_modules/
+*.log
+
+# Environment variables & secrets (KHÔNG ĐƯA LÊN GITHUB)
+.env
+.env.local
+.env.*.local
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

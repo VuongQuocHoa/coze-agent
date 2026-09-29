@@ -412,6 +412,8 @@ async function handleSendMessage(e) {
     // Đọc luồng SSE Stream từ Coze
     const reader = response.body.getReader();
     const decoder = new TextDecoder("utf-8");
+    const answerMessages = new Map(); // Lưu trữ nội dung từng message type: "answer"
+    let lastMsgId = "msg_default";
     let accumulatedText = "";
     let buffer = "";
     let currentEvent = "";
@@ -447,31 +449,57 @@ async function handleSendMessage(e) {
             throw new Error(`Coze: ${eventData.last_error.msg || 'Thất bại'} (Mã: ${eventData.last_error.code})`);
           }
 
-          // 1. Khi nhận delta (từng từ): CỘNG DỒN nội dung để chữ chạy mượt mà
+          // Lọc bỏ triệt để các gói tin kỹ thuật nội bộ (verbose, generate_answer_finish, function_call, tool_response...)
+          const isInternal = 
+            eventData.type === "verbose" ||
+            eventData.type === "function_call" ||
+            eventData.type === "tool_response" ||
+            eventData.type === "knowledge" ||
+            (typeof eventData.content === "string" && (
+              eventData.content.includes("generate_answer_finish") ||
+              eventData.content.includes("finish_reason") ||
+              eventData.content.trim().startsWith('{"msg_type"')
+            ));
+
+          if (isInternal) {
+            continue;
+          }
+
+          // Chỉ xử lý tin nhắn dạng câu trả lời ("answer")
+          const isAnswer = eventData.type === "answer" || (!eventData.type && eventData.role === "assistant");
+          if (!isAnswer) {
+            continue;
+          }
+
+          const msgId = eventData.id || lastMsgId;
+          lastMsgId = msgId;
+
+          // 1. Khi nhận delta (từng từ): CỘNG DỒN vào message tương ứng
           if (currentEvent === "conversation.message.delta") {
             if (eventData.content) {
-              accumulatedText += eventData.content;
-              msgElement.innerHTML = renderMarkdown(accumulatedText);
-              botMsg.content = accumulatedText;
-              scrollToBottom();
+              const prev = answerMessages.get(msgId) || "";
+              answerMessages.set(msgId, prev + eventData.content);
             }
           } 
-          // 2. Khi nhận completed (kết thúc tin nhắn): ĐỒNG BỘ NỘI DUNG CUỐI CÙNG (KHÔNG CỘNG DỒN)
+          // 2. Khi nhận completed (kết thúc tin nhắn): ĐỒNG BỘ NỘI DUNG CUỐI CÙNG CỦA MESSAGE ĐÓ
           else if (currentEvent === "conversation.message.completed") {
-            if (eventData.content && (eventData.type === "answer" || eventData.role === "assistant")) {
-              accumulatedText = eventData.content;
-              msgElement.innerHTML = renderMarkdown(accumulatedText);
-              botMsg.content = accumulatedText;
-              scrollToBottom();
+            if (eventData.content) {
+              answerMessages.set(msgId, eventData.content);
             }
           }
           // 3. Dự phòng trường hợp Coze không gửi dòng "event:"
-          else if (eventData.type === "answer" && eventData.content) {
-            if (eventData.content.startsWith(accumulatedText) && eventData.content.length >= accumulatedText.length) {
-              accumulatedText = eventData.content;
+          else if (eventData.content) {
+            const prev = answerMessages.get(msgId) || "";
+            if (eventData.content.startsWith(prev) && eventData.content.length >= prev.length) {
+              answerMessages.set(msgId, eventData.content);
             } else {
-              accumulatedText += eventData.content;
+              answerMessages.set(msgId, prev + eventData.content);
             }
+          }
+
+          // Cập nhật giao diện với toàn bộ các câu trả lời nhận được
+          accumulatedText = Array.from(answerMessages.values()).filter(Boolean).join("\n\n");
+          if (accumulatedText) {
             msgElement.innerHTML = renderMarkdown(accumulatedText);
             botMsg.content = accumulatedText;
             scrollToBottom();

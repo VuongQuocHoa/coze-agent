@@ -1,6 +1,10 @@
 # Dependency & Build
 node_modules/
 *.log
+.venv/
+venv/
+__pycache__/
+*.py[cod]
 
 # Environment variables & secrets (KHÔNG ĐƯA LÊN GITHUB)
 .env

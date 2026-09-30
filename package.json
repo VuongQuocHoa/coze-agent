@@ -17,5 +17,8 @@
     "sse",
     "stream"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "highlight.js": "^11.12.0"
+  }
 }

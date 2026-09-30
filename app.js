@@ -144,7 +144,7 @@ function loadState() {
   try {
     const saved = localStorage.getItem('coze_chat_sessions');
     if (saved) STATE.sessions = JSON.parse(saved);
-  } catch (e) {}
+  } catch (e) { }
 
   if (!STATE.sessions || STATE.sessions.length === 0) {
     createNewSession("Đoạn chat mới", true);
@@ -215,9 +215,8 @@ function renderHistoryList() {
   STATE.sessions.forEach(session => {
     const isActive = session.id === STATE.currentSessionId;
     const item = document.createElement('div');
-    item.className = `group flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-medium transition ${
-      isActive ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'text-gray-300 hover:bg-gray-800/60'
-    }`;
+    item.className = `group flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs font-medium transition ${isActive ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'text-gray-300 hover:bg-gray-800/60'
+      }`;
     item.onclick = () => selectSession(session.id);
     item.innerHTML = `
       <div class="flex items-center gap-2 truncate min-w-0">
@@ -450,7 +449,7 @@ async function handleSendMessage(e) {
           }
 
           // Lọc bỏ triệt để các gói tin kỹ thuật nội bộ (verbose, generate_answer_finish, function_call, tool_response...)
-          const isInternal = 
+          const isInternal =
             eventData.type === "verbose" ||
             eventData.type === "function_call" ||
             eventData.type === "tool_response" ||
@@ -480,7 +479,7 @@ async function handleSendMessage(e) {
               const prev = answerMessages.get(msgId) || "";
               answerMessages.set(msgId, prev + eventData.content);
             }
-          } 
+          }
           // 2. Khi nhận completed (kết thúc tin nhắn): ĐỒNG BỘ NỘI DUNG CUỐI CÙNG CỦA MESSAGE ĐÓ
           else if (currentEvent === "conversation.message.completed") {
             if (eventData.content) {

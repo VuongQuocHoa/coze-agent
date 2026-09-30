@@ -92,6 +92,19 @@ module.exports = async (req, res) => {
 
   return new Promise((resolve) => {
     const proxyReq = https.request(proxyOptions, (proxyRes) => {
+      proxyRes.on('error', (err) => {
+        console.error('Lỗi stream proxyRes Vercel:', err.message);
+      });
+
+      res.on('error', (err) => {
+        console.error('Lỗi kết nối client res Vercel:', err.message);
+      });
+
+      res.on('close', () => {
+        proxyReq.destroy();
+        resolve();
+      });
+
       res.writeHead(proxyRes.statusCode, {
         ...proxyRes.headers,
         'Access-Control-Allow-Origin': '*',

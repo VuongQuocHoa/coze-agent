@@ -179,3 +179,11 @@ server.listen(PORT, () => {
   console.log(`📡 Proxy endpoint giải quyết CORS: http://localhost:${PORT}/api/coze`);
   console.log('==================================================');
 });
+
+process.on('uncaughtException', (err) => {
+  console.error('Lỗi ngoại lệ Uncaught Exception:', err.message);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Lỗi Unhandled Rejection:', reason);
+});

@@ -27,10 +27,10 @@ coze-agent/
    - Tin nhắn phân biệt màu rõ ràng: **Người dùng** (xanh dương, căn phải) và **Bot** (nền tối, căn trái).
    - Tự động cuộn xuống dưới cùng (`scrollToBottom`) khi có chữ mới.
 
-2. **Hỗ trợ Markdown & Nút kết nối Google Sheets**:
+2. **Hỗ trợ định dạng Markdown & Code Block**:
    - Tự động định dạng in đậm, danh sách số, bảng biểu.
    - Tô màu mã nguồn (Syntax Highlighting) và nút **"Sao chép" (Copy)** 1-click.
-   - **Tự động chuyển đổi liên kết OAuth Google Sheets** thành nút bấm trực quan để người dùng xác thực ghi đơn hàng.
+   - Giao diện chat thuần túy, sạch sẽ, không yêu cầu cấp quyền rườm rà.
 
 3. **Kết nối Coze API Streaming thời gian thực**:
    - Nhận phản hồi theo luồng **Server-Sent Events (SSE)** giúp chữ hiển thị mượt mà.

@@ -66,9 +66,18 @@ function setupMarkdown() {
   }
 }
 
+function cleanBotText(text) {
+  if (!text) return "";
+  return text
+    .replace(/cancel_oauth[a-zA-Z0-9_\-]+/gi, '')
+    .replace(/授权后即代表[^\n]*/g, '')
+    .trim();
+}
+
 function renderMarkdown(raw) {
-  if (typeof marked === 'undefined') return escapeHtml(raw);
-  const html = marked.parse(raw);
+  const cleaned = cleanBotText(raw);
+  if (typeof marked === 'undefined') return escapeHtml(cleaned);
+  const html = marked.parse(cleaned);
   const div = document.createElement('div');
   div.innerHTML = html;
 
@@ -91,37 +100,15 @@ function renderMarkdown(raw) {
     wrapper.appendChild(pre);
   });
 
-  // Tự động biến đường link xác thực Google Sheets / OAuth thành Nút bấm nổi bật như trên Coze
+  // Mở link an toàn, tự động loại bỏ link ủy quyền OAuth nếu bot có gửi kèm
   div.querySelectorAll('a').forEach((a) => {
+    const href = a.getAttribute('href') || '';
+    if (href.includes('accounts.google.com') || href.includes('oauth') || href.includes('coze.com/open/oauth')) {
+      a.remove();
+      return;
+    }
     a.setAttribute('target', '_blank');
     a.setAttribute('rel', 'noopener noreferrer');
-
-    const href = a.getAttribute('href') || '';
-    const text = a.innerText.toLowerCase();
-
-    if (href.includes('accounts.google.com') || href.includes('oauth') || text.includes('click here')) {
-      const btnCard = document.createElement('div');
-      btnCard.className = 'my-3 p-3.5 rounded-xl bg-[#1a2332] border border-emerald-500/40 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3';
-      btnCard.innerHTML = `
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <p class="text-xs font-semibold text-gray-200">Ủy quyền Google Sheets</p>
-            <p class="text-[11px] text-gray-400">Bấm nút bên cạnh để cấp quyền lưu đơn hàng vào Sheets</p>
-          </div>
-        </div>
-        <a href="${href}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-xl shadow-md transition active:scale-95 shrink-0 no-underline">
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          <span>Kết nối Google Sheets</span>
-        </a>
-      `;
-
-      if (a.parentNode) {
-        a.parentNode.insertBefore(btnCard, a.nextSibling);
-      }
-    }
   });
 
   return div.innerHTML;

@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import re
 import requests
 
 # Tự động nạp file .env nếu có (không cần thư viện bên ngoài)
@@ -84,9 +85,14 @@ def ask_coze(prompt: str) -> str:
                 is_answer = msg_type == "answer" or (not msg_type and event_data.get("role") == "assistant")
                 if current_event == "conversation.message.delta" and is_answer:
                     if content:
-                        sys.stdout.write(str(content))
-                        sys.stdout.flush()
-                        full_answer.append(str(content))
+                        text_chunk = str(content)
+                        # Loại bỏ token cancel_oauth và các chuỗi ủy quyền hệ thống
+                        text_chunk = re.sub(r'cancel_oauth[a-zA-Z0-9_\-]+', '', text_chunk)
+                        text_chunk = re.sub(r'授权后即代表[^\n]*', '', text_chunk)
+                        if text_chunk:
+                            sys.stdout.write(text_chunk)
+                            sys.stdout.flush()
+                            full_answer.append(text_chunk)
 
             except (json.JSONDecodeError, AttributeError, TypeError):
                 continue

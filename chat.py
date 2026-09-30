@@ -122,12 +122,13 @@ if __name__ == "__main__":
     if not COZE_API_KEY or not COZE_BOT_ID or "pat_xxx" in COZE_API_KEY or "7xxx" in COZE_BOT_ID:
         print("⚠️ Chú ý: Hãy mở file '.env' và điền COZE_API_KEY cùng COZE_BOT_ID của bạn!\n")
 
-    print("\n🤖 Bot: Chào bạn! Tôi có thể giúp gì cho bạn hôm nay? Nếu bạn đang có nhu cầu đặt hàng, xin vui lòng cung cấp cho tôi các thông tin sau:\n")
-    print("1. Tên khách hàng:")
-    print("2. Số điện thoại:")
-    print("3. Địa chỉ nhận hàng:")
-    print("4. Tên sản phẩm:\n")
-    print("Cảm ơn bạn!")
+    print("\n🤖 Bot: Dạ chào bạn! Hôm nay vườn mình có hoạt động gì cần lưu lại vào nhật ký VietGAP không ạ?\n")
+    print("Bạn chỉ cần nhắn cho tôi vài thông tin đơn giản như thế này nhé:\n")
+    print("- Tên sản phẩm hoặc Vật tư sử dụng: ")
+    print("- Lô đất / Khu vực canh tác: ")
+    print("- Hoạt động đã làm (Bón phân, phun thuốc hay thu hoạch...): ")
+    print("- Tên người thực hiện:\n")
+    print("Tôi sẽ tự động ghi nhận và đồng bộ vào hệ thống cho mình ngay!")
 
     while True:
         try:

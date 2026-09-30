@@ -127,14 +127,16 @@ window.copyCode = function (btn) {
 /* ==========================================================
    2. Quản lý phiên chat & LocalStorage
    ========================================================== */
-const WELCOME_MESSAGE = `Chào bạn! Tôi có thể giúp gì cho bạn hôm nay? Nếu bạn đang có nhu cầu đặt hàng, xin vui lòng cung cấp cho tôi các thông tin sau:
+const WELCOME_MESSAGE = `Dạ chào bạn! Hôm nay vườn mình có hoạt động gì cần lưu lại vào nhật ký VietGAP không ạ? 
 
-1. Tên khách hàng:
-2. Số điện thoại:
-3. Địa chỉ nhận hàng:
-4. Tên sản phẩm:
+Bạn chỉ cần nhắn cho tôi vài thông tin đơn giản như thế này nhé:
 
-Cảm ơn bạn!`;
+- Tên sản phẩm hoặc Vật tư sử dụng: 
+- Lô đất / Khu vực canh tác: 
+- Hoạt động đã làm (Bón phân, phun thuốc hay thu hoạch...): 
+- Tên người thực hiện: 
+
+Tôi sẽ tự động ghi nhận và đồng bộ vào hệ thống cho mình ngay!`;
 
 function loadState() {
   try {

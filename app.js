@@ -389,14 +389,24 @@ async function handleSendMessage(e) {
       });
     } catch (netErr) {
       if (CONFIG.apiUrl !== '/api/coze') {
-        // Fallback tự động qua /api/coze nếu gọi trực tiếp bị CORS
-        response = await fetch('/api/coze', {
-          method: "POST",
-          headers: reqHeaders,
-          body: JSON.stringify(reqPayload)
-        });
-      } else {
-        throw new Error("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại kết nối mạng.");
+        try {
+          response = await fetch('/api/coze', {
+            method: "POST",
+            headers: reqHeaders,
+            body: JSON.stringify(reqPayload)
+          });
+        } catch (e) {
+          netErr = e;
+        }
+      }
+      if (!response) {
+        if (window.location.protocol === 'file:') {
+          throw new Error("Bạn đang mở file trực tiếp (file://). Vui lòng chạy 'npm start' trong Terminal và mở http://localhost:3000, hoặc mở trên link Vercel đã deploy!");
+        }
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          throw new Error("Không thể kết nối đến server cục bộ (/api/coze). Hãy đảm bảo bạn đã chạy lệnh 'npm start' trong Terminal!");
+        }
+        throw new Error(`Không thể kết nối đến máy chủ (/api/coze): ${netErr.message || 'Lỗi mạng'}. Vui lòng kiểm tra lại link web hoặc trạng thái deploy trên Vercel.`);
       }
     }
 

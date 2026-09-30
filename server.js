@@ -107,6 +107,18 @@ const server = http.createServer((req, res) => {
       };
 
       const proxyReq = https.request(proxyOptions, (proxyRes) => {
+        proxyRes.on('error', (err) => {
+          console.error('Lỗi stream proxyRes:', err.message);
+        });
+
+        res.on('error', (err) => {
+          console.error('Lỗi kết nối client res:', err.message);
+        });
+
+        res.on('close', () => {
+          proxyReq.destroy();
+        });
+
         // Stream phản hồi trực tiếp về frontend (Hỗ trợ SSE Streaming)
         res.writeHead(proxyRes.statusCode, {
           ...proxyRes.headers,
@@ -117,8 +129,10 @@ const server = http.createServer((req, res) => {
 
       proxyReq.on('error', (err) => {
         console.error('Lỗi Coze Proxy:', err.message);
-        res.writeHead(502, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Proxy Error', message: err.message }));
+        if (!res.headersSent) {
+          res.writeHead(502, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Proxy Error', message: err.message }));
+        }
       });
 
       proxyReq.write(finalBody);
@@ -146,6 +160,17 @@ const server = http.createServer((req, res) => {
       res.end(content);
     }
   });
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Cổng ${PORT} đang được sử dụng bởi một tiến trình khác.`);
+    console.error(`💡 Cách xử lý: Hãy tắt tiến trình cũ hoặc dùng lệnh: Stop-Process -Name node -Force\n`);
+    process.exit(1);
+  } else {
+    console.error('Lỗi máy chủ:', err);
+    process.exit(1);
+  }
 });
 
 server.listen(PORT, () => {

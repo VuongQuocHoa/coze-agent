@@ -167,6 +167,7 @@ function createNewSession(title = "Đoạn chat mới", isInitial = false) {
   const newSession = {
     id: 'chat_' + Date.now(),
     title: title,
+    conversationId: null, // Lưu Coze conversation_id để ghi nhớ ngữ cảnh
     messages: [
       {
         id: 'msg_welcome',
@@ -372,6 +373,10 @@ async function handleSendMessage(e) {
     if (CONFIG.botId) {
       reqPayload.bot_id = CONFIG.botId;
     }
+    // Gửi conversation_id để Coze ghi nhớ lịch sử hội thoại
+    if (session.conversationId) {
+      reqPayload.conversation_id = session.conversationId;
+    }
 
     // Nếu gọi trực tiếp api.coze.com (không qua /api/coze) thì bắt buộc phải có key ở frontend
     const isDirectCoze = CONFIG.apiUrl && CONFIG.apiUrl.startsWith('http') && !CONFIG.apiUrl.includes('/api/coze');
@@ -380,9 +385,15 @@ async function handleSendMessage(e) {
     }
 
     // Gửi yêu cầu POST tới Coze API (qua Proxy /api/coze hoặc trực tiếp)
+    let fetchUrl = CONFIG.apiUrl;
+    if (session.conversationId) {
+      const sep = fetchUrl.includes('?') ? '&' : '?';
+      fetchUrl += `${sep}conversation_id=${encodeURIComponent(session.conversationId)}`;
+    }
+
     let response;
     try {
-      response = await fetch(CONFIG.apiUrl, {
+      response = await fetch(fetchUrl, {
         method: "POST",
         headers: reqHeaders,
         body: JSON.stringify(reqPayload)
@@ -390,7 +401,10 @@ async function handleSendMessage(e) {
     } catch (netErr) {
       if (CONFIG.apiUrl !== '/api/coze') {
         try {
-          response = await fetch('/api/coze', {
+          const fallbackUrl = session.conversationId 
+            ? `/api/coze?conversation_id=${encodeURIComponent(session.conversationId)}` 
+            : '/api/coze';
+          response = await fetch(fallbackUrl, {
             method: "POST",
             headers: reqHeaders,
             body: JSON.stringify(reqPayload)
@@ -454,6 +468,13 @@ async function handleSendMessage(e) {
 
         try {
           const eventData = JSON.parse(jsonStr);
+
+          // Tự động lưu conversation_id từ Coze để ghi nhớ toàn bộ ngữ cảnh đoạn chat
+          const convId = eventData.conversation_id || eventData.data?.conversation_id;
+          if (convId && !session.conversationId) {
+            session.conversationId = convId;
+            saveState();
+          }
 
           // Chỉ bắt lỗi nếu Coze thực sự báo mã lỗi khác 0
           if (eventData.last_error && eventData.last_error.code !== 0) {

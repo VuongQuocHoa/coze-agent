@@ -21,13 +21,18 @@ if os.path.exists(env_path):
 COZE_API_KEY = os.getenv("COZE_API_KEY", "")
 COZE_BOT_ID  = os.getenv("COZE_BOT_ID", "")
 USER_ID      = "user_python_agent"
+CURRENT_CONVERSATION_ID = None
 
 def ask_coze(prompt: str) -> str:
     """
     Gửi câu hỏi đến Coze API và in câu trả lời chạy từng từ (stream) ra màn hình.
-    Trả về toàn bộ chuỗi câu trả lời của Bot.
+    Tự động ghi nhớ toàn bộ ngữ cảnh các câu hỏi trước đó.
     """
+    global CURRENT_CONVERSATION_ID
     url = "https://api.coze.com/v3/chat"
+    if CURRENT_CONVERSATION_ID:
+        url += f"?conversation_id={CURRENT_CONVERSATION_ID}"
+
     headers = {
         "Authorization": f"Bearer {COZE_API_KEY}",
         "Content-Type": "application/json"
@@ -74,6 +79,10 @@ def ask_coze(prompt: str) -> str:
                 event_data = json.loads(data_str)
                 if not isinstance(event_data, dict):
                     continue
+
+                # Lưu conversation_id để ghi nhớ ngữ cảnh cho lượt chat tiếp theo
+                if event_data.get("conversation_id"):
+                    CURRENT_CONVERSATION_ID = event_data.get("conversation_id")
 
                 # Bỏ qua các gói tin kỹ thuật nội bộ (verbose, generate_answer_finish, v.v.)
                 msg_type = event_data.get("type")

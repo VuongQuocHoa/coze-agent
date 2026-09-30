@@ -76,12 +76,20 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // Hỗ trợ duy trì ngữ cảnh và lịch sử hội thoại (Coze conversation_id)
+  const convId = (req.query && req.query.conversation_id) || payload.conversation_id || '';
+  let targetPath = '/v3/chat';
+  if (convId) {
+    targetPath += `?conversation_id=${encodeURIComponent(convId)}`;
+  }
+  delete payload.conversation_id;
+
   const finalBody = JSON.stringify(payload);
 
   const proxyOptions = {
     hostname: targetHost,
     port: 443,
-    path: '/v3/chat',
+    path: targetPath,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

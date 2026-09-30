@@ -131,7 +131,7 @@ const WELCOME_MESSAGE = `Dạ chào bạn! Hôm nay vườn mình có hoạt đ�
 
 Bạn chỉ cần nhắn cho tôi vài thông tin đơn giản như thế này nhé:
 
-- Tên sản phẩm hoặc Vật tư sử dụng: 
+- Tên cây trồng: 
 - Lô đất / Khu vực canh tác: 
 - Hoạt động đã làm (Bón phân, phun thuốc hay thu hoạch...): 
 - Tên người thực hiện: 

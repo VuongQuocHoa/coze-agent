@@ -127,6 +127,15 @@ window.copyCode = function (btn) {
 /* ==========================================================
    2. Quản lý phiên chat & LocalStorage
    ========================================================== */
+const WELCOME_MESSAGE = `Chào bạn! Tôi có thể giúp gì cho bạn hôm nay? Nếu bạn đang có nhu cầu đặt hàng, xin vui lòng cung cấp cho tôi các thông tin sau:
+
+1. Tên khách hàng:
+2. Số điện thoại:
+3. Địa chỉ nhận hàng:
+4. Tên sản phẩm:
+
+Cảm ơn bạn!`;
+
 function loadState() {
   try {
     const saved = localStorage.getItem('coze_chat_sessions');
@@ -136,6 +145,12 @@ function loadState() {
   if (!STATE.sessions || STATE.sessions.length === 0) {
     createNewSession("Đoạn chat mới", true);
   } else {
+    // Tự động cập nhật lời chào mới nếu phiên chat chưa có tin nhắn phát sinh
+    STATE.sessions.forEach(s => {
+      if (s.messages && s.messages.length === 1 && s.messages[0].id === 'msg_welcome') {
+        s.messages[0].content = WELCOME_MESSAGE;
+      }
+    });
     STATE.currentSessionId = STATE.sessions[0].id;
   }
 }
@@ -156,7 +171,7 @@ function createNewSession(title = "Đoạn chat mới", isInitial = false) {
       {
         id: 'msg_welcome',
         role: 'assistant',
-        content: 'Xin chào! Tôi là trợ lý AI Coze của bạn. Hãy gửi tin nhắn để bắt đầu trò chuyện nhé! 🤖',
+        content: WELCOME_MESSAGE,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ]
